@@ -1,0 +1,1 @@
+pyinstaller --distpath "../../bin/" --onefile --add-data "./logo.png;." --icon="logo.png" main.pyw
