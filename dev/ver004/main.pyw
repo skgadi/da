@@ -18,15 +18,44 @@ import json
 
 import pprint
 
-ports = serial.tools.list_ports.comports()
 
-#for port, desc, hwid in sorted(ports):
-#        print(port);
-
-pp = pprint.PrettyPrinter(width=41, compact=True)
-pp.pprint(ports)
+global openedSerialPorts
+openedSerialPorts = {}
 
 
+'''
+onMessageSerialTasks
+  
+'''
+def onMessageSerialTaskOpen(command):
+  global openedSerialPorts
+  #print(openedSerialPorts)
+  onMessageSerialTaskCloseIfOpen(command)
+  openedSerialPorts[command['port']] = serial.Serial(command['port'], command['baud'], bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+  command['response'] = "OK"
+
+def onMessageSerialTaskCloseIfOpen(command):
+  global openedSerialPorts
+  if command["port"] in openedSerialPorts:
+    openedSerialPorts[command["port"]].close()
+    openedSerialPorts.pop(command["port"])
+  command['response'] = "OK"
+
+def onMessageSerialTaskWrite(command):
+  global openedSerialPorts
+  if not (command["port"] in openedSerialPorts):
+    onMessageSerialTaskOpen(command)
+  openedSerialPorts[command["port"]].write(command["data"])
+  command['response'] = "OK"
+
+def onMessageSerialTaskRead(command):
+  global openedSerialPorts
+  if not (command["port"] in openedSerialPorts):
+    onMessageSerialTaskOpen(command)
+  command['response'] = openedSerialPorts[command["port"]].readline().decode("Ascii")
+
+
+# This solves the problem to include image files in the executable
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -41,7 +70,7 @@ def resource_path(relative_path):
 Command
 {
   "type": "serial", // serial, visa
-  "command": "list", // list, write, read, query, close
+  "command": "list", // list, open, write, read, query, close
   "port": "COM1", // com port or visa address
   "data": "data" // data to write or query
   "baud": 115200 // baud rate
@@ -52,7 +81,7 @@ Output
   "isError": false, // true if error
   "command": "list", // command received
   "data": "data" // data received
-  "resnponse": "data" // data to send
+  "response": "data" // data to send
 }
 
 '''
@@ -62,20 +91,27 @@ Output
 def onMessageRecieved (client, server, message):
   try:
     command = json.loads(message)
-
     try:
       command["isError"] = False
       if command['type'] == 'serial':
         if command['command'] == 'list':
-          print("Serail list");
+          response = []
+          ports = serial.tools.list_ports.comports()
+          for port, desc, hwid in sorted(ports):
+            item = {}
+            item["port"] = port
+            item["description"] = desc
+            item["hwid"] = hwid
+            response.append(item)
+          command['response'] = response
+        elif command['command'] == 'open':
+          onMessageSerialTaskOpen(command)
         elif command['command'] == 'write':
-          print("Serail write");
+          onMessageSerialTaskWrite(command)
         elif command['command'] == 'read':
-          print("Serail read");
-        elif command['command'] == 'query':
-          print("Serail query");
+          onMessageSerialTaskRead(command)
         elif command['command'] == 'close':
-          print("Serail close");
+          onMessageSerialTaskCloseIfOpen(command)
       elif command['type'] == 'visa':
         if command['command'] == 'list':
           print("Visa list");
@@ -88,13 +124,12 @@ def onMessageRecieved (client, server, message):
         elif command['command'] == 'close':
           print("Visa close");
     except Exception as e:
-      print(e)
-      print("Invalid command")
+      #print(e)
       command["isError"] = True
+      command['response'] = "Error: " + str(e)
     server.send_message(client, json.dumps(command))
   except Exception as e:
-    print(e)
-    print("Invalid JSON")
+    #print(e)
     server.send_message(client, "{\"isError\": true}""")
   
 
