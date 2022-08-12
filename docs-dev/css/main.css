@@ -27,6 +27,10 @@
   overflow: hidden;
 }
 
+.wind-item-0>.inputs>div>* {
+  height: 42px;
+}
+
 .wind-item-0>.code {
   width: 100%;
   height: calc(100% - 42px);
@@ -71,4 +75,8 @@ pre {
 
 .key {
   color: red;
+}
+
+.no-border {
+  border: none;
 }

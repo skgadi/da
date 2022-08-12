@@ -3,34 +3,120 @@ const {
 } = Vue;
 
 
+const fullList = {
+  serial: {
+    name: 'Serial',
+    description: 'Serial port communication',
+    commands: {
+      list: {
+        name: 'List',
+        description: 'List all available serial ports',
+        parameters: [],
+      },
+      open: {
+        name: 'Open',
+        description: 'Open a serial port',
+        parameters: [{
+          name: 'Port',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          name: 'Baudrate',
+          description: 'The baudrate to use',
+          type: 'number',
+        }],
+      },
+      close: {
+        name: 'Close',
+        description: 'Close a serial port',
+        parameters: [],
+      },
+      read: {
+        name: 'Read',
+        description: 'Read data from a serial port',
+        parameters: [{
+          name: 'Port',
+          description: 'The name of the port to open',
+          type: 'text',
+        }],
+      },
+      write: {
+        name: 'Write',
+        description: 'Write data to a serial port',
+        parameters: [{
+          name: 'Port',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          name: 'Data',
+          description: 'The data to write',
+          type: 'text',
+        }],
+      },
+    },
+  },
+  visa: {
+    name: 'VISA',
+    description: 'VISA (Virtual Instrument Software Architecture) communication',
+    commands: {
+      list: {
+        name: 'List',
+        description: 'List all available visa ports',
+        parameters: [],
+      },
+      open: {
+        name: 'Open',
+        description: 'Open a visa port',
+        parameters: [{
+          name: 'Resource',
+          description: 'The name of the port to open',
+          type: 'text',
+        }],
+      },
+      close: {
+        name: 'Close',
+        description: 'Close a visa port',
+        parameters: [],
+      },
+      read: {
+        name: 'Read',
+        description: 'Read data from a visa port',
+        parameters: [{
+          name: 'Resource',
+          description: 'The name of the port to open',
+          type: 'text',
+        }],
+      },
+      write: {
+        name: 'Write',
+        description: 'Write data to a visa port',
+        parameters: [{
+          name: 'Resource',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          name: 'Data',
+          description: 'The data to write',
+          type: 'text',
+        }],
+      },
+      query: {
+        name: 'Query',
+        description: 'Query a visa port',
+        parameters: [{
+          name: 'Resource',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          name: 'Data',
+          description: 'The data to write',
+          type: 'text',
+        }],
+      },
+    },
+  },
+}
 
 
 
 
-
-
-
-
-function syntaxHighlight(json) {
-  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-  var cls = 'number';
-  if (/^"/.test(match)) {
-  if (/:$/.test(match)) {
-  cls = 'key';
-  } else {
-  cls = 'string';
-  }
-  } else if (/true|false/.test(match)) {
-  cls = 'boolean';
-  } else if (/null/.test(match)) {
-  cls = 'null';
-  }
-  return '<span class="' + cls + '">' + match + '</span>';
-  });
-  }
-  
-  var obj = {a:1, 'b':'foo', c:[false,'false',null, 'null', {d:{e:1.3e5,f:'1.3e5'}}]};
-  var str = JSON.stringify(obj, undefined, 2);
-  
-console.log(  syntaxHighlight(str));

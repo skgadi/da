@@ -18,6 +18,8 @@ import json
 
 import pyvisa as visa
 
+from win10toast import ToastNotifier
+
 global channelsOpenend
 channelsOpenend = {"serial": {}, "visa": {}}
 
@@ -54,7 +56,7 @@ def onMessageSerialTaskWrite(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
-  channelsOpenend["serial"][command["port"]].write(command["data"])
+  channelsOpenend["serial"][command["port"]].write(command["data"].encode())
   command['response'] = "OK"
 
 def onMessageSerialTaskRead(command):
@@ -62,6 +64,8 @@ def onMessageSerialTaskRead(command):
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
   command['response'] = channelsOpenend["serial"][command["port"]].readline().decode("Ascii")
+
+
 
 
 '''
@@ -199,8 +203,26 @@ global wsServer
 def setExitTheApp():
   global wsServer
   wsServer.shutdown_gracefully()
+  closeAllConnection()
   global exitTheApp 
   exitTheApp = True
+
+def closeAllConnection():
+  global channelsOpenend
+  for port in channelsOpenend["serial"]:
+    try:
+      channelsOpenend["serial"][port].close()
+      channelsOpenend["serial"].pop(port)
+    except:
+      pass
+  for port in channelsOpenend["visa"]:
+    try:
+      channelsOpenend["visa"][port].close()
+      channelsOpenend["visa"].pop(port)
+    except:
+      pass
+
+
 
 
 def openURL(url):
@@ -224,12 +246,20 @@ if __name__ == "__main__":
   t1.daemon = True
   t1.daemon = True
 
+  toast = ToastNotifier()
+  toast.show_toast(
+    "SKGadi\'s Desktop Agent is running ...",
+    "This app runs in the tray. You can close this notification.",
+    duration = 20,
+    icon_path = "logo.ico",
+    threaded = True,
+  )
 
 
   icon = pystray.Icon(
     'desktop_agent',
     Image.open(resource_path('logo.png')), menu=menu(
-    item('Home page', lambda icon, item: openURL('https://skgadi.com/')),
+    item('Home page', lambda icon, item: openURL('https://da.skgadi.com/')),
     item(
     'Apps',
     menu(
@@ -239,6 +269,7 @@ if __name__ == "__main__":
     item(
     'temp-control',
     lambda icon, item: openURL('https://umk.skgadi.com/')))),
+    item('Author\'s page', lambda icon, item: openURL('https://skgadi.com/')),
     item('Exit', lambda icon, item: setExitTheApp())),
     title='SKGadi\'s Desktop Agent')
   # starting threads
