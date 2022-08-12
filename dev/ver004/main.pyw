@@ -105,7 +105,7 @@ def onMessageVisaTaskWrite(command):
     onMessageVisaTaskOpen(command)
 
   command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'")
-  channelsOpenend["visa"][command["resource"]].write(command["data"].encode("Ascii"))
+  channelsOpenend["visa"][command["resource"]].write(command["data"])
   command['response'] = "OK"
 
 def onMessageVisaTaskRead(command):
