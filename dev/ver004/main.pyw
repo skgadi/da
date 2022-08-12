@@ -56,7 +56,8 @@ def onMessageSerialTaskWrite(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
-  channelsOpenend["serial"][command["port"]].write(command["data"].encode())
+  command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'").replace("\\\"", "\"")
+  channelsOpenend["serial"][command["port"]].write(command["data"].encode("Ascii"))
   command['response'] = "OK"
 
 def onMessageSerialTaskRead(command):
@@ -86,7 +87,7 @@ def onMessageVisaTaskList(command):
 
 def onMessageVisaTaskOpen(command):
   global channelsOpenend
-  onMessageSerialTaskCloseIfOpen(command)
+  onMessageVisaTaskCloseIfOpen(command)
   rm = visa.ResourceManager()
   channelsOpenend["visa"][command['resource']] = rm.open_resource(command['resource'])
   command['response'] = "OK"

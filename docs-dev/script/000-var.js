@@ -29,7 +29,11 @@ const fullList = {
       close: {
         name: 'Close',
         description: 'Close a serial port',
-        parameters: [],
+        parameters: [{
+          name: 'Port',
+          description: 'The name of the port to close',
+          type: 'text',
+        }],
       },
       read: {
         name: 'Read',

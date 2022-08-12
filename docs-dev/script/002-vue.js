@@ -18,10 +18,10 @@ let vueApp = createApp({
         command: this.command,
       };
       if (this.protocol === 'serial') {
-        if (this.parameters.length > 0) {
+        if (this.fullList[this.protocol].commands[this.command].parameters.length > 0) {
           sendCodeObj.port = this.parameters[0];
         }
-        if (this.parameters.length > 1) {
+        if ( this.fullList[this.protocol].commands[this.command].parameters.length > 1) {
           if (this.command == 'open') {
             sendCodeObj.baud = this.parameters[1];
           } else if (this.command == 'write') {
@@ -29,10 +29,10 @@ let vueApp = createApp({
           }
         }
       } else if (this.protocol === 'visa') {
-        if (this.parameters.length > 0) {
+        if (this.fullList[this.protocol].commands[this.command].parameters.length > 0) {
           sendCodeObj.resource = this.parameters[0];
         }
-        if (this.parameters.length > 1) {
+        if (this.fullList[this.protocol].commands[this.command].parameters.length > 1) {
           sendCodeObj.data = this.parameters[1];
         }
       }
