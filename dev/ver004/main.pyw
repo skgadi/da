@@ -56,7 +56,7 @@ def onMessageSerialTaskWrite(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
-  command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'").replace("\\\"", "\"")
+  command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'")
   channelsOpenend["serial"][command["port"]].write(command["data"].encode("Ascii"))
   command['response'] = "OK"
 
@@ -103,14 +103,16 @@ def onMessageVisaTaskWrite(command):
   global channelsOpenend
   if not (command["resource"] in channelsOpenend["visa"]):
     onMessageVisaTaskOpen(command)
-  channelsOpenend["visa"][command["resource"]].write(command["data"])
+
+  command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'")
+  channelsOpenend["visa"][command["resource"]].write(command["data"].encode("Ascii"))
   command['response'] = "OK"
 
 def onMessageVisaTaskRead(command):
   global channelsOpenend
   if not (command["resource"] in channelsOpenend["visa"]):
     onMessageVisaTaskOpen(command)
-  command['response'] = channelsOpenend["visa"][command["resource"]].read_raw()
+  command['response'] = channelsOpenend["visa"][command["resource"]].read_raw().decode("Ascii")
 
 def onMessageVisaTaskQuery(command):
   global channelsOpenend
