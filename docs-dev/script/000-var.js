@@ -80,7 +80,11 @@ const fullList = {
       close: {
         name: 'Close',
         description: 'Close a visa port',
-        parameters: [],
+        parameters: [{
+          name: 'Resource',
+          description: 'The name of the port to close',
+          type: 'text',
+        }],
       },
       read: {
         name: 'Read',
