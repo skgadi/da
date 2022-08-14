@@ -9,15 +9,19 @@ from pystray import Icon as icon, Menu as menu, MenuItem as item
 import sys
 import webbrowser
 
+#pip install websocket-server
 from websocket_server import WebsocketServer
+#pip install pyserial
 import serial
 import serial.tools.list_ports
 import logging
 
 import json
 
+#pip install PyVISA
 import pyvisa as visa
 
+#pip install win10toast
 from win10toast import ToastNotifier
 
 global channelsOpenend
@@ -64,7 +68,7 @@ def onMessageSerialTaskRead(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
-  command['response'] = channelsOpenend["serial"][command["port"]].readline().decode("Ascii")
+  command['response'] = channelsOpenend["serial"][command["port"]].read(channelsOpenend["serial"][command["port"]].inWaiting()).decode("Ascii")
 
 
 
@@ -254,7 +258,7 @@ if __name__ == "__main__":
     "SKGadi\'s Desktop Agent is running ...",
     "This app runs in the tray. You can close this notification.",
     duration = 20,
-    icon_path = "logo.ico",
+    icon_path = resource_path('logo.ico'),
     threaded = True,
   )
 
@@ -281,7 +285,7 @@ if __name__ == "__main__":
   while True:
     time.sleep(1)
     if exitTheApp:
-      print("Exiting the app")
+      #print("Exiting the app")
       sys.exit()
   # wait until all threads finish
   t1.join()
