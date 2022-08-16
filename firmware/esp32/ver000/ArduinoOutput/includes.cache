@@ -1,0 +1,52 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\vssga\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.2\\cores\\esp32"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\vssga\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.2\\variants\\esp32"
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\uc.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\gsk_counter.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\gsk_pin_assignments.cpp",
+    "Include": "AiEsp32RotaryEncoder.h",
+    "Includepath": "C:\\Users\\vssga\\Documents\\Arduino\\libraries\\Ai_Esp32_Rotary_Encoder\\src"
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\gsk_pin_assignments.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\gsk_serial.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "c:\\Suresh\\git\\da\\firmware\\esp32\\ver000\\ArduinoOutput\\sketch\\main.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\vssga\\Documents\\Arduino\\libraries\\Ai_Esp32_Rotary_Encoder\\src\\AiEsp32RotaryEncoder.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\vssga\\Documents\\Arduino\\libraries\\Ai_Esp32_Rotary_Encoder\\src\\AiEsp32RotaryEncoderNumberSelector.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]
