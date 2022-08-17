@@ -24,6 +24,10 @@ import pyvisa as visa
 #pip install win10toast
 from win10toast import ToastNotifier
 
+
+#pip install cbor2
+from cbor2 import dumps, loads
+
 global channelsOpenend
 channelsOpenend = {"serial": {}, "visa": {}}
 
@@ -69,6 +73,15 @@ def onMessageSerialTaskRead(command):
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
   command['response'] = channelsOpenend["serial"][command["port"]].read(channelsOpenend["serial"][command["port"]].inWaiting()).decode("Ascii")
+
+def onMessageSerialTaskSRCbor(command):
+  global channelsOpenend
+  if not (command["port"] in channelsOpenend["serial"]):
+    onMessageSerialTaskOpen(command)
+  channelsOpenend["serial"][command["port"]].write(dumps(command["data"]))
+  time.sleep(0.01)
+  recInfo = channelsOpenend["serial"][command["port"]].read(channelsOpenend["serial"][command["port"]].inWaiting())
+  command['response'] = loads(recInfo)
 
 
 
@@ -142,7 +155,7 @@ def resource_path(relative_path):
 Command
 {
   "type": "serial", // serial, visa
-  "command": "list", // list, open, write, read, query, close
+  "command": "list", // list, open, write, read, query, close,sRCbor
   "port": "COM1", // com port for serial
   "data": "data" // data to write or query
   "baud": 115200 // baud rate
@@ -176,6 +189,8 @@ def onMessageRecieved (client, server, message):
           onMessageSerialTaskRead(command)
         elif command['command'] == 'close':
           onMessageSerialTaskCloseIfOpen(command)
+        elif command['command'] == 'sRCbor':
+          onMessageSerialTaskSRCbor(command)
       elif command['type'] == 'visa':
         if command['command'] == 'list':
           onMessageVisaTaskList(command)

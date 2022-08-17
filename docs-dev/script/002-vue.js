@@ -26,6 +26,8 @@ let vueApp = createApp({
             sendCodeObj.baud = this.parameters[1];
           } else if (this.command == 'write') {
             sendCodeObj.data = this.parameters[1];
+          } else if (this.command == 'sRCbor') {
+            sendCodeObj.data = JSON.parse(this.parameters[1]);
           }
         }
       } else if (this.protocol === 'visa') {

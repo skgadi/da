@@ -12,8 +12,7 @@ const fullList = {
         name: 'List',
         description: 'List all available serial ports',
         parameters: [],
-      },
-      open: {
+      }, open: {
         name: 'Open',
         description: 'Open a serial port',
         parameters: [{
@@ -25,8 +24,7 @@ const fullList = {
           description: 'The baudrate to use',
           type: 'number',
         }],
-      },
-      close: {
+      }, close: {
         name: 'Close',
         description: 'Close a serial port',
         parameters: [{
@@ -34,8 +32,7 @@ const fullList = {
           description: 'The name of the port to close',
           type: 'text',
         }],
-      },
-      read: {
+      }, read: {
         name: 'Read',
         description: 'Read data from a serial port',
         parameters: [{
@@ -43,10 +40,21 @@ const fullList = {
           description: 'The name of the port to open',
           type: 'text',
         }],
-      },
-      write: {
+      }, write: {
         name: 'Write',
         description: 'Write data to a serial port',
+        parameters: [{
+          name: 'Port',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          name: 'Data',
+          description: 'The data to write',
+          type: 'text',
+        }],
+      }, sRCbor: {
+        name: 'sRCbor',
+        description: 'Send receive data from a serial port in binary format',
         parameters: [{
           name: 'Port',
           description: 'The name of the port to open',
@@ -67,8 +75,7 @@ const fullList = {
         name: 'List',
         description: 'List all available visa ports',
         parameters: [],
-      },
-      open: {
+      }, open: {
         name: 'Open',
         description: 'Open a visa port',
         parameters: [{
@@ -76,8 +83,7 @@ const fullList = {
           description: 'The name of the port to open',
           type: 'text',
         }],
-      },
-      close: {
+      }, close: {
         name: 'Close',
         description: 'Close a visa port',
         parameters: [{
@@ -85,8 +91,7 @@ const fullList = {
           description: 'The name of the port to close',
           type: 'text',
         }],
-      },
-      read: {
+      }, read: {
         name: 'Read',
         description: 'Read data from a visa port',
         parameters: [{
@@ -94,8 +99,7 @@ const fullList = {
           description: 'The name of the port to open',
           type: 'text',
         }],
-      },
-      write: {
+      }, write: {
         name: 'Write',
         description: 'Write data to a visa port',
         parameters: [{
@@ -107,8 +111,7 @@ const fullList = {
           description: 'The data to write',
           type: 'text',
         }],
-      },
-      query: {
+      }, query: {
         name: 'Query',
         description: 'Query a visa port',
         parameters: [{

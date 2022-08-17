@@ -25,12 +25,12 @@ char str[] = R"(
   std::vector<std::uint8_t> cborArray = nlohmann::json::to_cbor(obj);
   
   for(uint8_t i : cborArray){ 
-    Serial.printf("%02X ", i);
+    Serial.printf("%02X, ", i);
   }
   
   Serial.println("\n--------");
   for(uint8_t i : cborArray){ 
-    Serial.printf("%d ", i);
+    Serial.printf("%d, ", i);
   }
 
 
@@ -54,9 +54,27 @@ std::vector<std::uint8_t> cborArray2 = {
 
 }
 
+
+
 void loop() {
   if (Serial.available()) {
-    Serial.println("Hello World!");
+    u_int64_t start = millis();
+    std::vector<std::uint8_t> cborArray = {};
+    while (Serial.available()) {
+      cborArray.push_back(Serial.read());
+    }
+    //Serial.printf("Time to read: %d\n", end - start);
+    try {
+      nlohmann::json obj;
+      obj["d1"] = 12.25451;
+      
+      std::vector <std::uint8_t> cborArray2 = nlohmann::json::to_cbor(obj);
+      Serial.write(cborArray2.data(), cborArray2.size());
+      u_int64_t end = millis();
+      //Serial.printf("Time to write: %d\n", end - start);
+    } catch (const std::exception& e) {
+      //Serial.println(e.what());
+    }
   }
   delay(1000);
 }
