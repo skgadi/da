@@ -16,10 +16,12 @@ const fullList = {
         name: 'Open',
         description: 'Open a serial port',
         parameters: [{
+          key : 'port',
           name: 'Port',
           description: 'The name of the port to open',
           type: 'text',
         }, {
+          key : 'baud',
           name: 'Baudrate',
           description: 'The baudrate to use',
           type: 'number',
@@ -28,6 +30,7 @@ const fullList = {
         name: 'Close',
         description: 'Close a serial port',
         parameters: [{
+          key : 'port',
           name: 'Port',
           description: 'The name of the port to close',
           type: 'text',
@@ -36,6 +39,7 @@ const fullList = {
         name: 'Read',
         description: 'Read data from a serial port',
         parameters: [{
+          key : 'port',
           name: 'Port',
           description: 'The name of the port to open',
           type: 'text',
@@ -44,10 +48,12 @@ const fullList = {
         name: 'Write',
         description: 'Write data to a serial port',
         parameters: [{
+          key : 'port',
           name: 'Port',
           description: 'The name of the port to open',
           type: 'text',
         }, {
+          key : 'data',
           name: 'Data',
           description: 'The data to write',
           type: 'text',
@@ -56,13 +62,31 @@ const fullList = {
         name: 'sRCbor',
         description: 'Send receive data from a serial port in binary format',
         parameters: [{
+          key : 'port',
           name: 'Port',
           description: 'The name of the port to open',
           type: 'text',
         }, {
+          key : 'data',
           name: 'Data',
           description: 'The data to write',
           type: 'text',
+          encode: 'json'
+        }],
+      }, sR: {
+        name: 'sR',
+        description: 'Send receive data from a serial port in ASCII format',
+        parameters: [{
+          key : 'port',
+          name: 'Port',
+          description: 'The name of the port to open',
+          type: 'text',
+        }, {
+          key : 'data',
+          name: 'Data',
+          description: 'The data to write',
+          type: 'text',
+          encode: 'json'
         }],
       },
     },
@@ -79,6 +103,7 @@ const fullList = {
         name: 'Open',
         description: 'Open a visa port',
         parameters: [{
+          key : 'resource',
           name: 'Resource',
           description: 'The name of the port to open',
           type: 'text',
@@ -87,6 +112,7 @@ const fullList = {
         name: 'Close',
         description: 'Close a visa port',
         parameters: [{
+          key : 'resource',
           name: 'Resource',
           description: 'The name of the port to close',
           type: 'text',
@@ -95,6 +121,7 @@ const fullList = {
         name: 'Read',
         description: 'Read data from a visa port',
         parameters: [{
+          key : 'resource',
           name: 'Resource',
           description: 'The name of the port to open',
           type: 'text',
@@ -103,10 +130,12 @@ const fullList = {
         name: 'Write',
         description: 'Write data to a visa port',
         parameters: [{
+          key : 'resource',
           name: 'Resource',
           description: 'The name of the port to open',
           type: 'text',
         }, {
+          key : 'data',
           name: 'Data',
           description: 'The data to write',
           type: 'text',
@@ -115,10 +144,12 @@ const fullList = {
         name: 'Query',
         description: 'Query a visa port',
         parameters: [{
+          key : 'resource',
           name: 'Resource',
           description: 'The name of the port to open',
           type: 'text',
         }, {
+          key : 'data',
           name: 'Data',
           description: 'The data to write',
           type: 'text',

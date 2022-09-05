@@ -76,5 +76,4 @@ void loop() {
       //Serial.println(e.what());
     }
   }
-  delay(1000);
 }

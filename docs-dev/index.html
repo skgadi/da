@@ -94,7 +94,7 @@
         </div>
         <template v-for="(item, index) in fullList[protocol].commands[command].parameters">
           <div class="w3-col s2">
-            <input class="w3-input w3-border" :type="item.type" v-model="parameters[index]" :title="item.description" :placeholder="item.name">
+            <input class="w3-input w3-border" :type="item.type" v-model="parameters[item.key]" :title="item.description" :placeholder="item.name">
           </div>
         </template>
         <template v-for="index in (2-fullList[protocol].commands[command].parameters.length)">

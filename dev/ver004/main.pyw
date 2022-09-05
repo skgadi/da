@@ -1,5 +1,6 @@
 # Python program to illustrate the concept
 # of threading
+from socket import timeout
 import threading
 import os
 import time
@@ -49,8 +50,12 @@ def onMessageSerialTaskList(command):
 
 def onMessageSerialTaskOpen(command):
   global channelsOpenend
+  tOut = 0.05;
+  if "tOut" in command:
+    if command['tOut']>0:
+      tOut=command['tOut'];
   onMessageSerialTaskCloseIfOpen(command)
-  channelsOpenend["serial"][command['port']] = serial.Serial(command['port'], command['baud'], bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+  channelsOpenend["serial"][command['port']] = serial.Serial(command['port'], command['baud'], bytesize=8, timeout=tOut, stopbits=serial.STOPBITS_ONE)
   command['response'] = "OK"
 
 def onMessageSerialTaskCloseIfOpen(command):
@@ -78,10 +83,24 @@ def onMessageSerialTaskSRCbor(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
+  channelsOpenend["serial"][command["port"]].reset_input_buffer()
   channelsOpenend["serial"][command["port"]].write(dumps(command["data"]))
-  time.sleep(0.01)
-  recInfo = channelsOpenend["serial"][command["port"]].read(channelsOpenend["serial"][command["port"]].inWaiting())
+  recInfo = channelsOpenend["serial"][command["port"]].readline()
   command['response'] = loads(recInfo)
+
+def onMessageSerialTaskSR(command):
+  global channelsOpenend
+  if not (command["port"] in channelsOpenend["serial"]):
+    onMessageSerialTaskOpen(command)
+  channelsOpenend["serial"][command["port"]].reset_input_buffer()
+  #Send data
+  command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'")
+  channelsOpenend["serial"][command["port"]].write(command["data"].encode("Ascii"))
+  #Receive data
+  recInfo = channelsOpenend["serial"][command["port"]].readline().decode("Ascii")
+  print(recInfo)
+  command['response'] = recInfo
+
 
 
 
@@ -191,6 +210,8 @@ def onMessageRecieved (client, server, message):
           onMessageSerialTaskCloseIfOpen(command)
         elif command['command'] == 'sRCbor':
           onMessageSerialTaskSRCbor(command)
+        elif command['command'] == 'sR':
+          onMessageSerialTaskSR(command)
       elif command['type'] == 'visa':
         if command['command'] == 'list':
           onMessageVisaTaskList(command)

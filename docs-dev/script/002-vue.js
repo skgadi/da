@@ -4,45 +4,31 @@ let vueApp = createApp({
       view: 0,
       protocol: 'serial',
       command: 'list',
-      parameters: [],
+      parameters: {},
       fullList: fullList,
       websocket: null,
       recCode: '',
       enableSend: false,
+      codetoSend: {},
+      prettySendCode: '',
     }
   },
-  computed: {
-    codetoSend() {
-      let sendCodeObj = {
-        type: this.protocol,
-        command: this.command,
-      };
-      if (this.protocol === 'serial') {
-        if (this.fullList[this.protocol].commands[this.command].parameters.length > 0) {
-          sendCodeObj.port = this.parameters[0];
-        }
-        if ( this.fullList[this.protocol].commands[this.command].parameters.length > 1) {
-          if (this.command == 'open') {
-            sendCodeObj.baud = this.parameters[1];
-          } else if (this.command == 'write') {
-            sendCodeObj.data = this.parameters[1];
-          } else if (this.command == 'sRCbor') {
-            sendCodeObj.data = JSON.parse(this.parameters[1]);
-          }
-        }
-      } else if (this.protocol === 'visa') {
-        if (this.fullList[this.protocol].commands[this.command].parameters.length > 0) {
-          sendCodeObj.resource = this.parameters[0];
-        }
-        if (this.fullList[this.protocol].commands[this.command].parameters.length > 1) {
-          sendCodeObj.data = this.parameters[1];
-        }
-      }
-      return sendCodeObj;
+  watch: {
+    parameters: {
+      handler(newValue, oldValue) {
+          this.composeCode()
+        },
+      deep: true,
     },
-    prettySendCode() {
-      return syntaxHighlight(JSON.stringify(this.codetoSend, null, 2));
+    command() {
+      this.composeCode()
+    },
+    protocol() {
+      this.composeCode()
     }
+  },
+  mounted() {
+    this.composeCode()
   },
   methods: {
     connectIfNeeded() {
@@ -77,6 +63,23 @@ let vueApp = createApp({
         this.websocket.send(JSON.stringify(this.codetoSend));
         this.recCode = "Fecthing response...";
       }
+    }, composeCode() {
+      this.codetoSend = {
+        type: this.protocol,
+        command: this.command,
+      };
+      for (let i = 0; i < this.fullList[this.protocol].commands[this.command].parameters.length; i++) {
+        key = this.fullList[this.protocol].commands[this.command].parameters[i].key;
+        this.codetoSend[key] = this.parameters[key];
+        if (this.fullList[this.protocol].commands[this.command].parameters[i].encode == "json"){
+          try {
+            console.log(this.codetoSend[key]);
+            this.codetoSend[key] = JSON.parse(this.codetoSend[key]);
+          } catch (e) {
+          }
+        }
+      }
+      this.prettySendCode = syntaxHighlight(JSON.stringify(this.codetoSend, null, 2));
     }
   },
 }).mount('#app')
