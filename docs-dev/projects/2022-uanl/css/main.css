@@ -68,4 +68,5 @@ html, body, #app {
 .chartdiv {
   width: 100%;
   height: calc(100% - 75px);
+  margin: 0 !important;
 }

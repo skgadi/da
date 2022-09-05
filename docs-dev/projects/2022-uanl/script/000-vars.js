@@ -94,14 +94,13 @@ const chartVar = {
   },
   addDataPoint: function (point) {
     let keys = Object.keys(point);
-    let key;
     for (let i=0; i<keys.length; i++) {
       if (keys[i] != "t") {
-        key = keys[i];
-        break;
+        let obj = {t: point.t};
+        obj[keys[i]] = point[keys[i]];
+        this.series[keys[i]].data.push(obj);
       }
     }
-    this.series[key].data.push(point);
   },
   clear: function () {
     this.chart.dispose();

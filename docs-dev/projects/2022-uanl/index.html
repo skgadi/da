@@ -16,6 +16,7 @@
   <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
   <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
   <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+  <script src="https://unpkg.com/json5@2/dist/index.min.js"></script>
   </head>
 
 <body>
@@ -40,7 +41,7 @@
               <div class="w3-col s6">
                 <label>PCB's port</label>
                 <select class="w3-select w3-border w3-border-theme w3-round-large" v-model="ports.serial.selected"
-                  title="Select a serial port">
+                  :title="(!!ports.serial.selected)?'Selected: '+ ports.serial.selected:'Select a serial port'" :disabled="status.process.isRunning">
                   <option value="" disabled selected>Select a port</option>
                   <template v-for="(item, idx) in ports.serial.list">
                     <option :value="item.port" :title="item.description">{{item.port}} - {{item.description}}</option>
@@ -50,7 +51,7 @@
               <div class="w3-col s6">
                 <label>Keithley 2450's port</label>
                 <select class="w3-select w3-border w3-border-theme w3-round-large" v-model="ports.visa.selected"
-                  title="Select a visa port">
+                  :title="(!!ports.visa.selected)?'Selected: '+ ports.serial.selected:'Select a visa resource'" :disabled="status.process.isRunning">
                   <option value="" disabled selected>Select a port</option>
                   <template v-for="(item, idx) in ports.visa.list">
                     <option :value="item.port" :title="item.description">{{item.description}}</option>
@@ -86,7 +87,7 @@
                 <div class="w3-center">Relay {{idx+1}}</div>
                 <div class="w3-center">Time: {{getRelayTime(idx)}}s</div>
                 <table class="">
-                  <tr>
+                  <tr v-show="!status.process.isRunning">
                     <td></td>
                     <td>
                       <div class="w3-center" style="font-size: 10px;">
@@ -108,7 +109,7 @@
                         {{idx1%2==0 ? "OFF" : "ON"}}
                       </td>
                       <td>
-                        <input class="w3-input w3-border w3-round-large w3-border-theme w3-right-align" type="number" v-model="relays[idx][idx1]" min="1">
+                        <input class="w3-input w3-border w3-round-large w3-border-theme w3-right-align" type="number" v-model="relays[idx][idx1]" min="1" :disabled="status.process.isRunning">
                       </td>
                     </tr>
                   </template>

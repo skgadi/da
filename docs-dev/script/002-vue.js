@@ -51,7 +51,7 @@ let vueApp = createApp({
     },
     onReceiveCode(code) {
       try {
-        let codeObj = JSON.parse(code);
+        let codeObj = JSON5.parse(code);
         this.recCode = syntaxHighlight(JSON.stringify(codeObj, null, 2));
       } catch (e) {
         this.recCode = "Error in received code: " + e;
@@ -59,7 +59,7 @@ let vueApp = createApp({
     },
     sendCode() {
       if (this.enableSend) {
-        console.log(JSON.stringify(this.codetoSend));
+        console.log(JSON5.stringify(this.codetoSend));
         this.websocket.send(JSON.stringify(this.codetoSend));
         this.recCode = "Fecthing response...";
       }
@@ -74,7 +74,7 @@ let vueApp = createApp({
         if (this.fullList[this.protocol].commands[this.command].parameters[i].encode == "json"){
           try {
             console.log(this.codetoSend[key]);
-            this.codetoSend[key] = JSON.parse(this.codetoSend[key]);
+            this.codetoSend[key] = JSON5.parse(this.codetoSend[key]);
           } catch (e) {
           }
         }

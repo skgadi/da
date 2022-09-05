@@ -30,6 +30,8 @@ from win10toast import ToastNotifier
 from cbor2 import dumps, loads
 
 global channelsOpenend
+global multipleSerialError
+multipleSerialError = 0
 channelsOpenend = {"serial": {}, "visa": {}}
 
 
@@ -57,13 +59,19 @@ def onMessageSerialTaskOpen(command):
   onMessageSerialTaskCloseIfOpen(command)
   channelsOpenend["serial"][command['port']] = serial.Serial(command['port'], command['baud'], bytesize=8, timeout=tOut, stopbits=serial.STOPBITS_ONE)
   command['response'] = "OK"
+  global multipleSerialError
+  multipleSerialError = 0
 
 def onMessageSerialTaskCloseIfOpen(command):
   global channelsOpenend
   if command["port"] in channelsOpenend["serial"]:
-    channelsOpenend["serial"][command["port"]].close()
-    channelsOpenend["serial"].pop(command["port"])
+    portToRemove = channelsOpenend["serial"].pop(command["port"])
+    print(channelsOpenend["serial"])
+    portToRemove.close()
   command['response'] = "OK"
+  global multipleSerialError
+  multipleSerialError = 0
+
 
 def onMessageSerialTaskWrite(command):
   global channelsOpenend
@@ -72,12 +80,16 @@ def onMessageSerialTaskWrite(command):
   command['data'] = str(command['data']).replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\b", "\b").replace("\\f", "\f").replace("\\v", "\v").replace("\\'", "\'")
   channelsOpenend["serial"][command["port"]].write(command["data"].encode("Ascii"))
   command['response'] = "OK"
+  global multipleSerialError
+  multipleSerialError = 0
 
 def onMessageSerialTaskRead(command):
   global channelsOpenend
   if not (command["port"] in channelsOpenend["serial"]):
     onMessageSerialTaskOpen(command)
   command['response'] = channelsOpenend["serial"][command["port"]].read(channelsOpenend["serial"][command["port"]].inWaiting()).decode("Ascii")
+  global multipleSerialError
+  multipleSerialError = 0
 
 def onMessageSerialTaskSRCbor(command):
   global channelsOpenend
@@ -86,7 +98,10 @@ def onMessageSerialTaskSRCbor(command):
   channelsOpenend["serial"][command["port"]].reset_input_buffer()
   channelsOpenend["serial"][command["port"]].write(dumps(command["data"]))
   recInfo = channelsOpenend["serial"][command["port"]].readline()
+  #print(recInfo);
   command['response'] = loads(recInfo)
+  global multipleSerialError
+  multipleSerialError = 0
 
 def onMessageSerialTaskSR(command):
   global channelsOpenend
@@ -100,6 +115,8 @@ def onMessageSerialTaskSR(command):
   recInfo = channelsOpenend["serial"][command["port"]].readline().decode("Ascii")
   print(recInfo)
   command['response'] = recInfo
+  global multipleSerialError
+  multipleSerialError = 0
 
 
 
@@ -227,6 +244,16 @@ def onMessageRecieved (client, server, message):
       #print(e)
       command["isError"] = True
       command['response'] = "Error: " + str(e)
+      if command["type"] == "serial":
+        global multipleSerialError
+        multipleSerialError = multipleSerialError + 1
+        if multipleSerialError > 3:
+          try:
+            onMessageSerialTaskCloseIfOpen(command)
+            command['response'] = "Error: " + str(e)
+          except:
+            command["isError"] = True
+            command['response'] = "Error: " + str(e)
     server.send_message(client, json.dumps(command))
   except Exception as e:
     #print(e)

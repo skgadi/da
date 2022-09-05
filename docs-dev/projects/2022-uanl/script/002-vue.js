@@ -7,7 +7,6 @@ let vueApp = createApp({
           hTimeInterval: null,
           t: 0,
           tS: 1,
-          tSocketWait: 50 // time in milliseconds
         },
         comm: { //Communication tab
           text: "Communications",
@@ -45,7 +44,13 @@ let vueApp = createApp({
       setValues: {
         voltage: 100,
         temperature: 100
-      }, relays:[[1],[1],[1],[1]],
+      },
+      relays: [
+        [1],
+        [1],
+        [1],
+        [1]
+      ],
       samplingTime: "",
       chart: chartVar,
       fileData: [],
@@ -55,7 +60,7 @@ let vueApp = createApp({
     "ports.serial.selected": function (newValue, oldValue) {
       //close old port 
       let command = {};
-      command.type="serial";
+      command.type = "serial";
       command.command = "close";
       command.port = oldValue;
       this.sendDataToWSocket(command);
@@ -65,7 +70,7 @@ let vueApp = createApp({
       };
       //open new port
       command = {};
-      command.type="serial";
+      command.type = "serial";
       command.command = "open";
       command.port = newValue;
       command.baud = this.ports.serial.baud;
@@ -75,7 +80,7 @@ let vueApp = createApp({
     "ports.visa.selected": function (newValue, oldValue) {
       //close old port 
       let command = {};
-      command.type="visa";
+      command.type = "visa";
       command.command = "close";
       command.resource = oldValue;
       this.sendDataToWSocket(command);
@@ -85,12 +90,12 @@ let vueApp = createApp({
       };
       //open new port
       command = {};
-      command.type="visa";
+      command.type = "visa";
       command.command = "open";
       command.resource = newValue;
       this.sendDataToWSocket(command);
     },
-    
+
     /*samplingTime: function (newItem, oldItem) {
       try {
         let num = parseFloat(newItem);
@@ -109,7 +114,7 @@ let vueApp = createApp({
     relayTime: function () {
       try {
         let out = this.getRelayTime(0);
-        for (let i=1; i<this.relays.length; i++) {
+        for (let i = 1; i < this.relays.length; i++) {
           out = leastCommonMultiple(out, this.getRelayTime(i));
         }
         return out;
@@ -118,22 +123,23 @@ let vueApp = createApp({
         console.log(e);
         return -1;
       }
-    }, samplingTimeInSec: function () {
+    },
+    samplingTimeInSec: function () {
       let defaultValueOut = 30;
       let minSamplingTime = 1;
       try {
         let gcd = this.relays[0][0];
-        for(let i=0; i<this.relays.length; i++) {
-          for (let j=0; j<this.relays[i].length; j++) {
+        for (let i = 0; i < this.relays.length; i++) {
+          for (let j = 0; j < this.relays[i].length; j++) {
             gcd = greatestCommonDivisor(gcd, this.relays[i][j]);
           }
         }
         let out = math.evaluate(this.samplingTime);
         out = Math.abs(Math.round(out));
-        if(isNaN(out)) {
+        if (isNaN(out)) {
           out = defaultValueOut;
         }
-        if(isNaN(gcd) || gcd<minSamplingTime) {
+        if (isNaN(gcd) || gcd < minSamplingTime) {
           gcd = minSamplingTime;
         }
         return [out, gcd]
@@ -145,14 +151,14 @@ let vueApp = createApp({
     }
   },
   methods: {
-    removeRelayTime: function(idx) {
-      if(this.relays[idx].length>1) {
+    removeRelayTime: function (idx) {
+      if (this.relays[idx].length > 1) {
         this.relays[idx].pop();
       }
     },
-    getRelayTime: function(idx) {
+    getRelayTime: function (idx) {
       let out = 0;
-      for (let i=0; i<this.relays[idx].length; i++) {
+      for (let i = 0; i < this.relays[idx].length; i++) {
         out = out + this.relays[idx][i];
       }
       return out;
@@ -185,15 +191,10 @@ let vueApp = createApp({
     onReceiveCode: function (data) {
       //console.log(data);
       try {
-        jsonData = JSON.parse(data);
-        if (!!jsonData.data) {
-          jsonData.data = jsonData.data.replace(/(\r\n|\n|\r)/gm, "");
-        }
-        if(typeof jsonData.response == 'string') {
-          jsonData.response = jsonData.response.replace(/(\r\n|\n|\r)/gm, "");
-        }
+        jsonData = JSON5.parse(data);
+        console.log(jsonData);
 
-        if (!data.isError) {
+        if (!jsonData.isError) {
 
           if (jsonData.type == "serial") {
             //Serial port List received
@@ -210,38 +211,20 @@ let vueApp = createApp({
               }
             }
             //when data received
-            //Temp
-            if (jsonData.command == "sR") {
-              if (jsonData.data == "R:T") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, T: val});
-              }
-              //Reference Temp
-              if (jsonData.data == "R:R") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, TR: val});
-              }
-              //Relay 0
-              if (jsonData.data == "R:S0") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, S0: val});
-              }
-              //Relay 1
-              if (jsonData.data == "R:S1") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, S1: val});
-              }
-              //Relay 2
-              if (jsonData.data == "R:S2") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, S2: val});
-              }
-              //Relay 3
-              if (jsonData.data == "R:S3") {
-                let val = parseFloat(jsonData.response);
-                chartVar.addDataPoint({t: this.status.process.t, S3: val});
+            if (jsonData.command == "sRCbor") {
+              if (!!jsonData.response.R) {
+                chartVar.addDataPoint({
+                  t: this.status.process.t,
+                  T: jsonData.response.R.T,
+                  TR: jsonData.response.R.R,
+                  S0: (jsonData.response.R.S0?1:0),
+                  S1: (jsonData.response.R.S1?1:0),
+                  S2: (jsonData.response.R.S2?1:0),
+                  S3: (jsonData.response.R.S3?1:0),
+                });
               }
             }
+
 
           } else if (jsonData.type == "visa") {
             //Visa port List received
@@ -281,7 +264,7 @@ let vueApp = createApp({
       this.sendDataToWSocket(command);
     },
     sendDataToWSocket: function (command) {
-      try{
+      try {
         if (this.wSocket.readyState == 1) {
           this.wSocket.send(JSON.stringify(command));
         }
@@ -293,8 +276,8 @@ let vueApp = createApp({
     requestData: function () {
       //set and request visa port data
       //TODO
-      
-      
+
+
       //set serial port values
       //TODO
 
@@ -305,37 +288,28 @@ let vueApp = createApp({
       cmd.port = this.ports.serial.selected;
       cmd.baud = this.ports.serial.baud;
       cmd.tOut = this.ports.serial.tOut;
-      cmd.command = "sR";
-      //Request temperature
-      cmd.data = "R:T\n";
-      this.sendDataToWSocket(cmd);
-      syncSleepFor(this.status.process.tSocketWait);
-      //Request setPoint
-      cmd.data = "R:R\n";
-      this.sendDataToWSocket(cmd);
-      syncSleepFor(this.status.process.tSocketWait);
-      //Request Relay status 0
-      cmd.data = "R:S0\n";
-      this.sendDataToWSocket(cmd);
-      syncSleepFor(this.status.process.tSocketWait);
-      //Request Relay status 1
-      cmd.data = "R:S1\n";
-      this.sendDataToWSocket(cmd);
-      syncSleepFor(this.status.process.tSocketWait);
-      //Request Relay status 2
-      cmd.data = "R:S2\n";
-      this.sendDataToWSocket(cmd);
-      syncSleepFor(this.status.process.tSocketWait);
-      //Request Relay status 3
-      cmd.data = "R:S3\n";
+      cmd.command = "sRCbor";
+      cmd.data = {
+        R: {
+          R: true,
+          T: true,
+          S0: true,
+          S1: true,
+          S2: true,
+          S3: true,
+        },
+        W: {
+          R: this.setValues.temperature
+        }
+      };
       this.sendDataToWSocket(cmd);
 
 
 
       this.status.process.t = this.status.process.t + this.status.process.tS;
     },
-    startStop: function() {
-      if(this.status.process.isRunning) {
+    startStop: function () {
+      if (this.status.process.isRunning) {
         clearInterval(this.status.process.hTimeInterval);
         this.status.process.isRunning = false;
       } else {
@@ -350,15 +324,16 @@ let vueApp = createApp({
           this.status.process.isRunning = true;
           chartVar.clear();
           chartVar.init();
-          this.status.process.t = 0;
           this.status.process.tS = this.samplingTimeInSec[1];
-          this.status.process.hTimeInterval = setInterval(()=>{
+          this.status.process.t = -this.status.process.tS;
+          this.status.process.hTimeInterval = setInterval(() => {
             vueApp.requestData();
-          }, (this.status.process.tS*1000));
+          }, (this.status.process.tS * 1000));
         }
       }
     }
-  }, mounted: function () {
+  },
+  mounted: function () {
     chartVar.makeRoot();
     chartVar.init();
   }
