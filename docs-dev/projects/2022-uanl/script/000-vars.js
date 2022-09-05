@@ -24,7 +24,7 @@ const chartVar = {
     
     tempSeries.strokes.template.set("strokeWidth", 2);
     
-    tempSeries.get("tooltip").label.set("text", "[bold]{name}[/]\n{valueX.formatDate()}: {valueY}")
+    tempSeries.get("tooltip").label.set("text", "[bold]{name}[/]\n{valueX}: {valueY}")
     tempSeries.data.setAll(this.data);
 
 

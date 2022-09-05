@@ -217,10 +217,10 @@ let vueApp = createApp({
                   t: this.status.process.t,
                   T: jsonData.response.R.T,
                   TR: jsonData.response.R.R,
-                  S0: (jsonData.response.R.S0?1:0),
-                  S1: (jsonData.response.R.S1?1:0),
-                  S2: (jsonData.response.R.S2?1:0),
-                  S3: (jsonData.response.R.S3?1:0),
+                  S0: (jsonData.response.R.S0 ? 1 : 0),
+                  S1: (jsonData.response.R.S1 ? 1 : 0),
+                  S2: (jsonData.response.R.S2 ? 1 : 0),
+                  S3: (jsonData.response.R.S3 ? 1 : 0),
                 });
               }
             }
@@ -330,6 +330,40 @@ let vueApp = createApp({
             vueApp.requestData();
           }, (this.status.process.tS * 1000));
         }
+      }
+    },
+    graphDisplay: function (model) {
+      chartVar.setVisibility("TR",false);
+      chartVar.setVisibility("T",false);
+      chartVar.setVisibility("R",false);
+      chartVar.setVisibility("S0",false);
+      chartVar.setVisibility("S1",false);
+      chartVar.setVisibility("S2",false);
+      chartVar.setVisibility("S3",false);
+      switch (model) {
+        case 0:
+          chartVar.setVisibility("TR",true);
+          chartVar.setVisibility("T",true);
+              break;
+        case 1:
+          chartVar.setVisibility("T",true);
+          chartVar.setVisibility("R",true);
+          break;
+        case 2:
+          chartVar.setVisibility("R",true);
+          chartVar.setVisibility("S0",true);
+          chartVar.setVisibility("S1",true);
+          chartVar.setVisibility("S2",true);
+          chartVar.setVisibility("S3",true);
+          break;
+        case 3:
+          chartVar.setVisibility("S0",true);
+          chartVar.setVisibility("S1",true);
+          chartVar.setVisibility("S2",true);
+          chartVar.setVisibility("S3",true);
+          break;
+        default:
+          break;
       }
     }
   },
