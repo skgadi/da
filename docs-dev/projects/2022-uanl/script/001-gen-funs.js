@@ -8,8 +8,9 @@ const greatestCommonDivisor = (a, b) => {
 
 
 function syncSleepFor(sleepDuration){
-  var now = new Date().getTime();
+  let now = new Date().getTime();
   while(new Date().getTime() < now + sleepDuration){ 
       /* Do nothing */ 
   }
 }
+
