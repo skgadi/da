@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset=utf-8>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-red.css">
+  <style>
+    .box {
+      height: 400px;
+      cursor: pointer;
+    }
+    .box>div:first-child {
+      height: 45px;
+      overflow: hidden;
+    }
+    .box>div:last-child {
+      height: calc(400px - 45px);
+      overflow: auto;
+    }
+    .box>div>img {
+      width: 50%;
+      text-align: center;
+      display: block;
+      margin: auto;
+      padding-top: 16px;
+    }
+    .box>div>p{
+      text-align: justify;
+    }
+    h2 {
+      font-size: 16px;
+      font-weight: bold;
+    }
+  </style>
+  <script src="https://unpkg.com/vue@3"></script>
+</head>
+
+<body>
+  <header class="w3-container w3-theme">
+    <h1>Projects using Desktop Agent</h1>
+  </header>
+  <br />
+  <div id="app">
+    <div class="w3-row-padding">
+      <template v-for="(val, idx) in projects">
+        <div class="w3-col s12 m6 l3">
+          <div class="w3-card box" @click="openUrl(val.url)" :href="val.url">
+            <div class="w3-container w3-theme">
+              <H2 v-text="val.title"></h2>
+            </div>
+            <div>
+              <img :src="val.img" >
+              <p class="w3-padding" v-text="val.desc"></p>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,4 @@
+const {
+  createApp
+} = Vue;
+

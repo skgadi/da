@@ -7,6 +7,7 @@ copy .\docs-dev\CNAME .\docs\
 copy .\docs-dev\browserconfig.xml .\docs\
 copy .\docs-dev\index.min.html .\docs\index.html
 copy .\docs-dev\css\*.min.css .\docs\css\
+xcopy .\docs-dev\projects .\docs\projects /y/s/q/i
 
 
 
