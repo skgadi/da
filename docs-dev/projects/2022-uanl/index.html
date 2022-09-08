@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-red.css">
   <script src="https://unpkg.com/vue@3"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.js" integrity="sha512-I3BR04+2bI75SNyY+c6cJWCUuseVbX1Zn952KS2Lw6+VKuZSA4tXkX5Py+T8N2I9SMT2+iQkE6eSISbhNxBMmw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.js"
+    integrity="sha512-I3BR04+2bI75SNyY+c6cJWCUuseVbX1Zn952KS2Lw6+VKuZSA4tXkX5Py+T8N2I9SMT2+iQkE6eSISbhNxBMmw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="stylesheet" href="css/main.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
@@ -17,15 +19,46 @@
   <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
   <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
   <script src="https://unpkg.com/json5@2/dist/index.min.js"></script>
-  </head>
+  <title>Synthesis of material in a gas chamber - 1</title>
+
+
+  <!--faveicon-->
+  <link rel="apple-touch-icon" sizes="57x57" href="../../apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="../../apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="../../apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="../../apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="../../apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="../../apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="../../apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../../android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
+  <link rel="manifest" href="../../manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="../../ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+
+
+
+
+</head>
 
 <body>
   <div id="app">
     <div id="top-bar" class="w3-bar w3-theme">
-      <a href="/projects/" class="w3-bar-item pointer"><i class="fa-solid fa-house-chimney"></i></a>
+      <a href="/projects/" class="w3-bar-item pointer" title="Visit all the projects developed using desktop agent">
+        <img src="../../logo.png" alt="logo" style="width: 40px;" />
+      </a>
       <span class="w3-bar-item w3-mobile">Synthesis of material in a gas chamber - 1</span>
-      <div href="#" class="w3-bar-item w3-right pointer w3-hover-text-black" @click="startStop" :title="status.process.isRunning?'Stop process':'Start process'"><i class="fa-fw fa-solid" :class="status.process.isRunning?'fa-stop':'fa-play'"></i></div>
-      <input type="text" class="w3-bar-item w3-input w3-border w3-border-theme w3-right w3-right-align" style="width: 225px;" placeholder="Output interval" v-model="samplingTime">
+      <div href="#" class="w3-bar-item w3-right pointer w3-hover-text-black" @click="startStop"
+        :title="status.process.isRunning?'Stop process':'Start process'"><i class="fa-fw fa-solid"
+          :class="status.process.isRunning?'fa-stop':'fa-play'"></i></div>
+      <input type="text" class="w3-bar-item w3-input w3-border w3-border-theme w3-right w3-right-align"
+        style="width: 225px;" placeholder="Output interval" v-model="outputInterval">
     </div>
     <div id="main-content" class="w3-row">
       <div id="inputs" class="w3-col s6">
@@ -40,8 +73,10 @@
             <div class="w3-row-padding">
               <div class="w3-col s6">
                 <label>PCB's port</label>
-                <select class="w3-select w3-border w3-border-theme w3-round-large" v-model="ports.serial.selected"
-                  :title="(!!ports.serial.selected)?'Selected: '+ ports.serial.selected:'Select a serial port'" :disabled="status.process.isRunning">
+                <select class="w3-select w3-border w3-round-large" v-model="ports.serial.selected"
+                  :class="status.process.isRunning?'w3-border-light-gray':'w3-border-theme'"
+                  :title="(!!ports.serial.selected)?'Selected: '+ ports.serial.selected:'Select a serial port'"
+                  :disabled="status.process.isRunning">
                   <option value="" disabled selected>Select a port</option>
                   <template v-for="(item, idx) in ports.serial.list">
                     <option :value="item.port" :title="item.description">{{item.port}} - {{item.description}}</option>
@@ -50,8 +85,10 @@
               </div>
               <div class="w3-col s6">
                 <label>Keithley 2450's port</label>
-                <select class="w3-select w3-border w3-border-theme w3-round-large" v-model="ports.visa.selected"
-                  :title="(!!ports.visa.selected)?'Selected: '+ ports.serial.selected:'Select a visa resource'" :disabled="status.process.isRunning">
+                <select class="w3-select w3-border w3-round-large" v-model="ports.visa.selected"
+                  :class="status.process.isRunning?'w3-border-light-gray':'w3-border-theme'"
+                  :title="(!!ports.visa.selected)?'Selected: '+ ports.serial.selected:'Select a visa resource'"
+                  :disabled="status.process.isRunning">
                   <option value="" disabled selected>Select a port</option>
                   <template v-for="(item, idx) in ports.visa.list">
                     <option :value="item.port" :title="item.description">{{item.description}}</option>
@@ -79,37 +116,35 @@
                 placeholder="Set temperature" v-model="setValues.temperature">
             </div>
           </div>
-          <hr/>
-          <p class="w3-center">Cycle time: {{relayTime}}s [{{relayTime>0?'Good':'Bad'}}]</p>
+          <hr />
+          <p class="w3-center">Cycle time: {{relays.cycleTime}}s [{{relays.cycleTime>0?'Good':'Bad'}}]</p>
           <div class="w3-row-padding w3-padding-top">
-            <template v-for="(item, idx) in relays">
+            <template v-for="(item, idx) in relays.list">
               <div class="w3-col s3">
                 <div class="w3-center">Relay {{idx+1}}</div>
-                <div class="w3-center">Time: {{getRelayTime(idx)}}s</div>
+                <div class="w3-center">Time: {{relays.list[idx].total}}s</div>
                 <table class="">
-                  <tr v-show="!status.process.isRunning">
+                  <tr>
                     <td></td>
                     <td>
-                      <div class="w3-center" style="font-size: 10px;">
-                        <span @click="relays[idx].push(1)" class="fa-stack fa-lg pointer">
-                          <i class="fa-regular fa-circle fa-stack-2x"></i>
-                          <i class="fa-solid fa-plus fa-stack-1x"></i>
-                        </span>
+                      <div class="w3-center" style="font-size: 20px;">
+                        <i @click="addRelayTime(idx)" class="fa-solid fa-circle-plus"
+                          :class="status.process.isRunning?'w3-text-white':'pointer'"></i>
                         &nbsp;&nbsp;
-                        <span @click="removeRelayTime(idx)" class="fa-stack fa-lg pointer">
-                          <i class="fa-regular fa-circle fa-stack-2x"></i>
-                          <i class="fa-solid fa-minus fa-stack-1x"></i>
-                        </span>    
+                        <i @click="removeRelayTime(idx)" class="fa-solid fa-circle-minus"
+                          :class="status.process.isRunning?'w3-text-white':'pointer'"></i>
                       </div>
                     </td>
                   </tr>
-                  <template v-for="(item1, idx1) in item">
+                  <template v-for="(item1, idx1) in item.list">
                     <tr>
                       <td>
                         {{idx1%2==0 ? "OFF" : "ON"}}
                       </td>
                       <td>
-                        <input class="w3-input w3-border w3-round-large w3-border-theme w3-right-align" type="number" v-model="relays[idx][idx1]" min="1" :disabled="status.process.isRunning">
+                        <input class="w3-input w3-border w3-round-large w3-right-align"
+                          :class="status.process.isRunning?'w3-border-light-gray':'w3-border-theme'" type="number"
+                          v-model="relays.list[idx].list[idx1]" min="1" :disabled="status.process.isRunning">
                       </td>
                     </tr>
                   </template>
@@ -126,38 +161,45 @@
           <div id="chartdiv" class="w3-margin chartdiv"></div>
           <div class="w3-row-padding">
             <div class="w3-col s3">
-              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(0)">Temerature</div>
+              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(0)">Temerature
+              </div>
             </div>
             <div class="w3-col s3">
-              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(1)">Resist/Temp</div>
+              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(1)">Resist/Temp
+              </div>
             </div>
             <div class="w3-col s3">
-              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(2)">Resist/Valves</div>
+              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(2)">
+                Resist/Valves</div>
             </div>
             <div class="w3-col s3">
-              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(3)">Valves</div>
+              <div class="w3-btn w3-block w3-border w3-border-theme w3-round-large" @click="graphDisplay(3)">Valves
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div id="status-bar" class="w3-bar w3-theme status-bar">
-      <div style="width: 200px" class="w3-bar-item w3-mobile w3-right">Output interval: {{samplingTimeInSec[0]}}s</div>
-      <div style="width: 030px" class="w3-bar-item w3-mobile w3-right"> | </div>
-      <div style="width: 200px" class="w3-bar-item w3-mobile w3-right">Sampling time: {{samplingTimeInSec[1]}}s</div>
-      <div style="width: 030px" class="w3-bar-item w3-mobile w3-right"> | </div>
-      <div style="width: 200px" class="w3-bar-item w3-mobile w3-right">PCB: <i :class="status.serial.icon"></i>
-        {{status.serial.text}}</div>
-      <div style="width: 030px" class="w3-bar-item w3-mobile w3-right"> | </div>
-      <div style="width: 250px" class="w3-bar-item w3-mobile w3-right">Keithley 2450: <i :class="status.visa.icon"></i>
-        {{status.visa.text}}</div>
-      <div style="width: 030px" class="w3-bar-item w3-mobile w3-right"> | </div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right"><a
-          href="https://github.com/skgadi/da/raw/main/bin/main.exe"><i class="fa-fw fa-solid fa-download"></i></a></div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right"><a href="https://github.com/skgadi/da/"><i
-            class="fa-fw fa-solid fa-code"></i></a></div>
-      <div style="width: 250px" class="w3-bar-item w3-mobile w3-right">Desktop agent: <i :class="status.da.icon"></i>
-        {{status.da.text}}</div>
+      <div class="w3-bar-item w3-mobile w3-right" :title="status.serial.text">PCB: <i :class="status.serial.icon"></i>
+      </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right" :title="status.visa.text">Keithley 2450: <i
+          :class="status.visa.icon"></i></div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right" :title="status.da.text">Desktop agent: <i :class="status.da.icon"></i>
+        &nbsp;
+        <a href="https://github.com/skgadi/da/" title="Visit code for SKGadi's desktop agent"><i
+            class="fa-fw fa-solid fa-code"></i></a>&nbsp;
+        <a href="https://github.com/skgadi/da/raw/main/bin/main.exe" title="Download SKgadi's desktop agent"><i
+            class="fa-fw fa-solid fa-download"></i></a>
+      </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right">Sampling time: 1s</div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right">Output interval: {{samplingTimeInSec[0]}}s</div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right">Required interval (Relays): {{samplingTimeInSec[1]}}s</div>
 
     </div>
   </div>

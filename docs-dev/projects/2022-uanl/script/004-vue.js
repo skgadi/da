@@ -4,9 +4,10 @@ let vueApp = createApp({
       status: {
         process: {
           isRunning: false,
-          hTimeInterval: null,
+          hTimeInterval: null, //Handle for time interval
           t: 0,
-          tS: 1,
+          outTimeInt: 30,
+          rRI: 1,
         },
         comm: { //Communication tab
           text: "Communications",
@@ -45,13 +46,23 @@ let vueApp = createApp({
         voltage: 100,
         temperature: 100
       },
-      relays: [
-        [1],
-        [1],
-        [1],
-        [1]
-      ],
-      samplingTime: "",
+      relays: {
+        cycleTime: 1,
+        list: [{
+          total: 1,
+          list: [1]
+        }, {
+          total: 1,
+          list: [1]
+        }, {
+          total: 1,
+          list: [1]
+        }, {
+          total: 1,
+          list: [1]
+        }]
+      },
+      outputInterval: "30",
       chart: chartVar,
       fileData: [],
     }
@@ -95,6 +106,27 @@ let vueApp = createApp({
       command.resource = newValue;
       this.sendDataToWSocket(command);
     },
+    "relays.list": {
+      handler (newValue, oldValue) {
+        this.computeRelayTotals();
+        /*for (let i=0; i<relays.list.length; i++) {
+          this.relays.cycleTime 
+        }*/
+        try {
+          this.computeRelayTotals();
+          let out = this.relays.list[0].total;
+          for (let i = 1; i < this.relays.list.length; i++) {
+            out = leastCommonMultiple(out, this.relays.list[i].total);
+          }
+          this.relays.cycleTime = out;
+        } catch (e) {
+          console.log("Error in relayTime");
+          console.log(e);
+          this.relays.cycleTime = -1;
+        }
+      },
+      deep: true
+    }
 
     /*samplingTime: function (newItem, oldItem) {
       try {
@@ -111,11 +143,12 @@ let vueApp = createApp({
     }*/
   },
   computed: {
-    relayTime: function () {
+    /*relayTime: function () {
       try {
-        let out = this.getRelayTime(0);
-        for (let i = 1; i < this.relays.length; i++) {
-          out = leastCommonMultiple(out, this.getRelayTime(i));
+        this.computeRelayTotals();
+        let out = this.relays.list[0].total;
+        for (let i = 1; i < this.relays.list.length; i++) {
+          out = leastCommonMultiple(out, this.relays.list[i].total);
         }
         return out;
       } catch (e) {
@@ -123,25 +156,19 @@ let vueApp = createApp({
         console.log(e);
         return -1;
       }
-    },
+    },*/
     samplingTimeInSec: function () {
       let defaultValueOut = 30;
       let minSamplingTime = 1;
       try {
-        let gcd = this.relays[0][0];
-        for (let i = 0; i < this.relays.length; i++) {
-          for (let j = 0; j < this.relays[i].length; j++) {
-            gcd = greatestCommonDivisor(gcd, this.relays[i][j]);
+        let gcd = this.relays.list[0].list[0];
+        //console.log(gcd);
+        for (let i = 0; i < this.relays.list.length; i++) {
+          for (let j = 0; j < this.relays.list[i].list.length; j++) {
+            gcd = greatestCommonDivisor(gcd, this.relays.list[i].list[j]);
           }
         }
-        let out = math.evaluate(this.samplingTime);
-        out = Math.abs(Math.round(out));
-        if (isNaN(out)) {
-          out = defaultValueOut;
-        }
-        if (isNaN(gcd) || gcd < minSamplingTime) {
-          gcd = minSamplingTime;
-        }
+        let out = math.evaluate(this.outputInterval);
         return [out, gcd]
       } catch (e) {
         console.log("Error in interpreting sampling time");
@@ -151,17 +178,22 @@ let vueApp = createApp({
     }
   },
   methods: {
-    removeRelayTime: function (idx) {
-      if (this.relays[idx].length > 1) {
-        this.relays[idx].pop();
+    computeRelayTotals: function () {
+      for (let i=0; i<this.relays.list.length; i++) {
+        this.relays.list[i].total = this.relays.list[i].list.reduce((a,b)=>a+b)
       }
     },
-    getRelayTime: function (idx) {
-      let out = 0;
-      for (let i = 0; i < this.relays[idx].length; i++) {
-        out = out + this.relays[idx][i];
+    addRelayTime: function (idx) {
+      if (!this.status.process.isRunning) {
+        this.relays.list[idx].list.push(1);
       }
-      return out;
+    },
+    removeRelayTime: function (idx) {
+      if (!this.status.process.isRunning) {
+        if (this.relays.list[idx].list.length > 1) {
+          this.relays.list[idx].list.pop();
+        }
+      }
     },
     connectIfNeeded: function () {
       if (this.wSocket.readyState > 1) {
@@ -192,7 +224,7 @@ let vueApp = createApp({
       //console.log(data);
       try {
         jsonData = JSON5.parse(data);
-        console.log(jsonData);
+        //console.log(jsonData);
 
         if (!jsonData.isError) {
 
@@ -274,12 +306,17 @@ let vueApp = createApp({
       }
     },
     requestData: function () {
+
+      this.status.process.t = this.status.process.t + 1;
+
       //set and request visa port data
       //TODO
 
 
       //set serial port values
       //TODO
+
+
 
 
       //Request serail port data
@@ -291,22 +328,40 @@ let vueApp = createApp({
       cmd.command = "sRCbor";
       cmd.data = {
         R: {
-          R: true,
-          T: true,
-          S0: true,
-          S1: true,
-          S2: true,
-          S3: true,
+          R: null,
+          T: null,
+          S0: null,
+          S1: null,
+          S2: null,
+          S3: null,
         },
         W: {
           R: this.setValues.temperature
         }
       };
+      
+      
+      // set and get relay positions
+      for (let i=0; i<this.relays.list.length; i++) {
+        cmd.data.R['S'+i] = null;
+        let cumVal = 0;
+        let relativeTime = math.mod(this.status.process.t,this.relays.list[i].total);
+        for (let j=0; j<this.relays.list[i].list.length; j++) {
+          cumVal += this.relays.list[i].list[j];
+          if (relativeTime<cumVal) {
+            cmd.data.W['S'+i] = !isEven(j);
+            break;
+          }
+        }
+      }
+      console.log(cmd);
+      
       this.sendDataToWSocket(cmd);
 
 
 
-      this.status.process.t = this.status.process.t + this.status.process.tS;
+
+
     },
     startStop: function () {
       if (this.status.process.isRunning) {
@@ -318,17 +373,26 @@ let vueApp = createApp({
         //Test all ports are open
         //TODO
         //check times are good
+        this.status.process.rRI = this.samplingTimeInSec[1];
+        if (greatestCommonDivisor(1,this.status.process.rRI) != 1) {
+          alert("Relay times are not correct, please adjust them to match 1s sampling time.");
+          return;
+        }
+        this.status.process.outTimeInt = this.samplingTimeInSec[0];
+        if (greatestCommonDivisor(1,this.status.process.outTimeInt) != 1) {
+          alert("Selected output interval is incompatible with the 1s sampling time. Please adjust.");
+          return;
+        }
         //TODO
         //Get confirmation
         if (confirm("Warning: you are about to start the process.\n\nIt will remove all the previous data.\n\n\nAre you sure?")) {
           this.status.process.isRunning = true;
           chartVar.clear();
           chartVar.init();
-          this.status.process.tS = this.samplingTimeInSec[1];
-          this.status.process.t = -this.status.process.tS;
+          this.status.process.t = -1;
           this.status.process.hTimeInterval = setInterval(() => {
             vueApp.requestData();
-          }, (this.status.process.tS * 1000));
+          }, (1000));
         }
       }
     },
