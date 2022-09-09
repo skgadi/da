@@ -91,7 +91,7 @@
                   :disabled="status.process.isRunning">
                   <option value="" disabled selected>Select a port</option>
                   <template v-for="(item, idx) in ports.visa.list">
-                    <option :value="item.port" :title="item.description">{{item.description}}</option>
+                    <option :value="item.resource" :title="item.resource">{{item.resource}}</option>
                   </template>
                 </select>
               </div>

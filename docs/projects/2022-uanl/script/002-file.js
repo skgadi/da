@@ -1,5 +1,16 @@
 class fileVar {
   constructor () {
+    this.pointKeys = [
+      "t",
+      "T",
+      "TR",
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "R"
+    ];
+    this.maxNumberOfRows = 100000; // 2 for the headding rows
     this.clearData();
   }
 
@@ -28,7 +39,30 @@ class fileVar {
   }
 
   addData(point) {
-    this.data.push(point);
+
+    let insertPoint = this.data.length;
+    let pointArray = [];
+    if (this.data[this.data.length-1].t>=point.t) {
+      for (let i=this.data.length-1; i>=0; i--) {
+        if (this.data[i].t == point.t) {
+          insertPoint = i;
+          pointArray = this.data[i];
+          break;
+        }
+      }
+    }
+    for (let i=0; i<this.pointKeys.length; i++) {
+      if (point.hasOwnProperty(this.pointKeys[i])) {
+        pointArray[i] = point[this.pointKeys[i]];
+      }
+    }
+
+    this.data[insertPoint] = pointArray;
+    //console.log(this.data.length);
+    if (this.data.length>=this.maxNumberOfRows) {
+      this.saveAsCSV();
+      this.clearData();
+    }
   }
 
   saveAsCSV() {
