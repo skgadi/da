@@ -181,25 +181,27 @@
       </div>
     </div>
     <div id="status-bar" class="w3-bar w3-theme status-bar">
-      <div class="w3-bar-item w3-mobile w3-right" :title="status.serial.text">PCB: <i :class="status.serial.icon"></i>
-      </div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
-      <div class="w3-bar-item w3-mobile w3-right" :title="status.visa.text">Keithley 2450: <i
-          :class="status.visa.icon"></i></div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
-      <div class="w3-bar-item w3-mobile w3-right" :title="status.da.text">Desktop agent: <i :class="status.da.icon"></i>
+      <div class="w3-bar-item w3-mobile" :title="status.da.text">Desktop agent: <i :class="status.da.icon"></i>
         &nbsp;
         <a href="https://github.com/skgadi/da/" title="Visit code for SKGadi's desktop agent"><i
             class="fa-fw fa-solid fa-code"></i></a>&nbsp;
         <a href="https://github.com/skgadi/da/raw/main/bin/main.exe" title="Download SKgadi's desktop agent"><i
             class="fa-fw fa-solid fa-download"></i></a>
       </div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile" :title="status.serial.text">PCB: <i :class="status.serial.icon"></i>
+      </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-center"> | </div>
+      <div class="w3-bar-item w3-mobile" :title="status.visa.text">Keithley 2450: <i
+          :class="status.visa.icon"></i></div>
+
       <div class="w3-bar-item w3-mobile w3-right">Sampling time: 1s</div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-center w3-right"> | </div>
       <div class="w3-bar-item w3-mobile w3-right">Output interval: {{samplingTimeInSec[0]}}s</div>
-      <div style="width: 30px" class="w3-bar-item w3-mobile w3-right w3-center"> | </div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-center w3-right"> | </div>
       <div class="w3-bar-item w3-mobile w3-right">Required interval (Relays): {{samplingTimeInSec[1]}}s</div>
+      <div style="width: 30px" class="w3-bar-item w3-mobile w3-center w3-right"> | </div>
+      <div class="w3-bar-item w3-mobile w3-right">Current time: {{status.process.t}}s</div>
 
     </div>
   </div>
