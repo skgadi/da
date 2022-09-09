@@ -440,10 +440,16 @@ let vueApp = createApp({
         default:
           break;
       }
+    },
+    confirmExitApp: function () {
+      if (this.status.process.isRunning) {
+        return "Please wait until you finalize the process";
+      }
     }
   },
   mounted: function () {
     chartVar.makeRoot();
     chartVar.init();
+    window.onbeforeunload = this.confirmExitApp;
   }
 }).mount("#app");

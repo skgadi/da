@@ -102,10 +102,10 @@ const chartVar = {
       }
       //console.log(this.series[keys[i]]);
     }
-    console.log(keys[maxCountIdx]);
+    //console.log(keys[maxCountIdx]);
 
     if (!!this.series && !!this.series[keys[maxCountIdx]] && this.series[keys[maxCountIdx]].data.length>this.maxChartData) {
-      console.log(this.series[keys[maxCountIdx]].data);
+      //console.log(this.series[keys[maxCountIdx]].data);
       let fromIdxToRemove = this.series[keys[maxCountIdx]].data.length-this.maxChartData;
       //console.log(fromIdxToRemove);
       //console.log(this.series[keys[maxCountIdx]].data.values[fromIdxToRemove]);
