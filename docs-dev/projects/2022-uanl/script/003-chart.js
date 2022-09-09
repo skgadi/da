@@ -1,8 +1,8 @@
 const chartVar = {
-  data: [],
   series: {},
   root: null,
   chart: null,
+  maxChartData: 1000,
   createSeries: function (name, field) {
     let tempSeries = chartVar.chart.series.push( 
       am5xy.SmoothedXLineSeries.new(chartVar.root, { 
@@ -20,7 +20,7 @@ const chartVar = {
     tempSeries.strokes.template.set("strokeWidth", 2);
     
     tempSeries.get("tooltip").label.set("text", "[bold]{name}[/]\n{valueX}: {valueY}")
-    tempSeries.data.setAll(this.data);
+    tempSeries.data.setAll([]);
 
 
     
@@ -89,11 +89,31 @@ const chartVar = {
   },
   addDataPoint: function (point) {
     let keys = Object.keys(point);
+    let maxCountIdx = 1; // can't use zero because it is t, so we use next index which is 1
+    let minTime = 0;
     for (let i=0; i<keys.length; i++) {
       if (keys[i] != "t") {
         let obj = {t: point.t};
         obj[keys[i]] = point[keys[i]];
         this.series[keys[i]].data.push(obj);
+        if (!!this.series && !!this.series[keys[i]] && !!this.series[keys[maxCountIdx]] && !!this.series[keys[i]].data && !!this.series[keys[maxCountIdx]].data && this.series[keys[i]].data.length>this.series[keys[maxCountIdx]].data.length) {
+          maxCountIdx = i;
+        }
+      }
+      //console.log(this.series[keys[i]]);
+    }
+    console.log(keys[maxCountIdx]);
+
+    if (!!this.series && !!this.series[keys[maxCountIdx]] && this.series[keys[maxCountIdx]].data.length>this.maxChartData) {
+      console.log(this.series[keys[maxCountIdx]].data);
+      let fromIdxToRemove = this.series[keys[maxCountIdx]].data.length-this.maxChartData;
+      //console.log(fromIdxToRemove);
+      //console.log(this.series[keys[maxCountIdx]].data.values[fromIdxToRemove]);
+      let removeFromTime = this.series[keys[maxCountIdx]].data.values[this.series[keys[maxCountIdx]].data.length-this.maxChartData].t;
+      for (let i=0; i<keys.length; i++) {
+        while( !!this.series[keys[i]] && !!this.series[keys[i]].data.values[0] && (this.series[keys[i]].data.values[0].t < removeFromTime)) {
+          this.series[keys[i]].data.shift();
+        }
       }
     }
   },

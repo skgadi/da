@@ -8,6 +8,7 @@ let vueApp = createApp({
           t: 0,
           outTimeInt: 30,
           rRI: 1,
+          lastOutTime: -Infinity
         },
         comm: { //Communication tab
           text: "Communications",
@@ -32,7 +33,7 @@ let vueApp = createApp({
           selcted: null,
           list: [],
           baud: 115200,
-          tOut: 0.01
+          tOut: 0.05
         },
         visa: {
           selcted: null,
@@ -64,7 +65,7 @@ let vueApp = createApp({
       },
       outputInterval: "30",
       chart: chartVar,
-      fileData: [],
+      file: new fileVar()
     }
   },
   watch: {
@@ -244,16 +245,23 @@ let vueApp = createApp({
             }
             //when data received
             if (jsonData.command == "sRCbor") {
-              if (!!jsonData.response.R) {
-                chartVar.addDataPoint({
-                  t: this.status.process.t,
-                  T: jsonData.response.R.T,
-                  TR: jsonData.response.R.R,
-                  S0: (jsonData.response.R.S0 ? 1 : 0),
-                  S1: (jsonData.response.R.S1 ? 1 : 0),
-                  S2: (jsonData.response.R.S2 ? 1 : 0),
-                  S3: (jsonData.response.R.S3 ? 1 : 0),
-                });
+              //console.log(this.status.process.t);
+              if (math.mod(this.status.process.t, this.status.process.outTimeInt) == 0) {
+                if (!!jsonData.response.R) {
+                  let point = {
+                    t: this.status.process.t,
+                    T: jsonData.response.R.T,
+                    TR: jsonData.response.R.R,
+                    S0: (jsonData.response.R.S0 ? 1 : 0),
+                    S1: (jsonData.response.R.S1 ? 1 : 0),
+                    S2: (jsonData.response.R.S2 ? 1 : 0),
+                    S3: (jsonData.response.R.S3 ? 1 : 0),
+                  };
+                  chartVar.addDataPoint(point);
+                  this.file.addData(point);
+
+                  this.status.process.lastOutTime = this.status.process.t;                
+                }
               }
             }
 
@@ -354,7 +362,7 @@ let vueApp = createApp({
           }
         }
       }
-      console.log(cmd);
+      //console.log(cmd);
       
       this.sendDataToWSocket(cmd);
 
@@ -367,6 +375,7 @@ let vueApp = createApp({
       if (this.status.process.isRunning) {
         clearInterval(this.status.process.hTimeInterval);
         this.status.process.isRunning = false;
+        this.file.saveAsCSV();
       } else {
         //Check websocket
         //TODO
@@ -389,7 +398,9 @@ let vueApp = createApp({
           this.status.process.isRunning = true;
           chartVar.clear();
           chartVar.init();
+          this.file.clearData();
           this.status.process.t = -1;
+          this.status.process.lastOutTime = -Infinity;
           this.status.process.hTimeInterval = setInterval(() => {
             vueApp.requestData();
           }, (1000));
