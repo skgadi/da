@@ -7,7 +7,9 @@ GSK_PWM::GSK_PWM (char* id, int* pins, float initVal, int channel, int freq, int
   this->channel = channel;
   this->freq = freq;
   this->res = res;
-  this->maxDutyCycle = (int)(pow(2, res) - 1);  
+  this->maxDutyCycle = (int)(pow(2, res) - 1);
+  Serial.print("maxDutyCycle");
+  Serial.println(maxDutyCycle);
   reset();
 }
 
