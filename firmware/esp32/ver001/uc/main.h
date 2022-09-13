@@ -2,7 +2,8 @@
 #define MAIN_H
 
 
-
+#include <Arduino.h>
+#include "json.hpp"
 
 
 
@@ -13,22 +14,29 @@ enum GSK_COMMAND {
 };
 
 enum GSK_IO_TYPE {
-  GSK_DIGITAL_IN,
-  GSK_DIGITAL_OUT,
-  GSK_ANALOG_IN,  //ADC
-  GSK_ANALOG_OUT, //PWM
-  GSK_COUNTER,
-  GSK_ENCODER
+  GSK_IO_TYPE_DIGITAL_IN,
+  GSK_IO_TYPE_DIGITAL_OUT,
+  GSK_IO_TYPE_ANALOG_IN,  //ADC
+  GSK_IO_TYPE_ANALOG_OUT, //PWM
+  GSK_IO_TYPE_COUNTER,
+  GSK_IO_TYPE_ENCODER
 };
 
+extern nlohmann::json DATA_OUT;
+extern nlohmann::json DATA_IN;
+
 class GSK_IO_PROPERTIES {
-  GSK_IO_TYPE type;
-  int *pins;
-  void *value;
   public:
-    virtual void setup();
+    GSK_IO_TYPE type;
+    int *pins;
+    char* id;
+    GSK_IO_PROPERTIES(char* id, int* pins) {
+      this->id = id;
+      this->pins = pins;
+    }
     virtual void reset();
     virtual void loop();
+    virtual void setVal(void**);
 };
 
 
@@ -36,6 +44,9 @@ class GSK_IO_PROPERTIES {
 
 
 #include "gsk_digital_in.h"
+#include "gsk_digital_out.h"
+#include "gsk_analog_in.h"
+#include "gsk_pwm.h"
 
 
 #endif
