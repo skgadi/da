@@ -47,6 +47,7 @@ class GSK_IO_PROPERTIES {
 #include "gsk_digital_out.h"
 #include "gsk_analog_in.h"
 #include "gsk_pwm.h"
+#include "gsk_encoder.h"
 
 
 #endif
