@@ -4,6 +4,7 @@ from socket import timeout
 import threading
 import os
 import time
+#pip install pystray
 import pystray
 from PIL import Image
 from pystray import Icon as icon, Menu as menu, MenuItem as item

@@ -8,6 +8,7 @@ class fileVar {
       "S1",
       "S2",
       "S3",
+      "V",
       "R"
     ];
     this.maxNumberOfRows = 100000; // 2 for the headding rows
@@ -42,9 +43,9 @@ class fileVar {
 
     let insertPoint = this.data.length;
     let pointArray = [];
-    if (this.data[this.data.length-1].t>=point.t) {
+    if (this.data[this.data.length-1][0]>=point.t) {
       for (let i=this.data.length-1; i>=0; i--) {
-        if (this.data[i].t == point.t) {
+        if (this.data[i][0] == point.t) {
           insertPoint = i;
           pointArray = this.data[i];
           break;
@@ -66,6 +67,7 @@ class fileVar {
   }
 
   saveAsCSV() {
+    console.log(this.data);
     let preparedData = this.data;
     let date = new Date();
     let filename = "";
@@ -84,7 +86,11 @@ class fileVar {
     let processRow = function (row) {
         let finalVal = '';
         for (let j = 0; j < row.length; j++) {
-            let innerValue = row[j] === null ? '' : row[j].toString();
+            let innerValue = "";// = row[j] === null ? '' : row[j].toString();
+            try {
+              innerValue = row[j].toString();
+            } catch (e) {
+            }
             if (row[j] instanceof Date) {
                 innerValue = row[j].toLocaleString();
             };

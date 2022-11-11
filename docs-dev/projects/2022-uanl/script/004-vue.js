@@ -244,12 +244,12 @@ let vueApp = createApp({
               }
             }
             //when data received
-            if (jsonData.command == "sRCbor") {
+            if (jsonData.command == "sRCbor" && jsonData.time != undefined) {
               //console.log(this.status.process.t);
               if (math.mod(this.status.process.t, this.status.process.outTimeInt) == 0) {
                 if (!!jsonData.response.R) {
                   let point = {
-                    t: this.status.process.t,
+                    t: jsonData.time,
                     T: jsonData.response.R.T,
                     TR: jsonData.response.R.R,
                     S0: (jsonData.response.R.S0 ? 1 : 0),
@@ -257,15 +257,13 @@ let vueApp = createApp({
                     S2: (jsonData.response.R.S2 ? 1 : 0),
                     S3: (jsonData.response.R.S3 ? 1 : 0),
                   };
+                  //console.log(point);
                   chartVar.addDataPoint(point);
                   this.file.addData(point);
-
-                  this.status.process.lastOutTime = this.status.process.t;                
+                  this.status.process.lastOutTime = jsonData.time;
                 }
               }
             }
-
-
           } else if (jsonData.type == "visa") {
             //Visa port List received
             if (jsonData.command == "list") {
@@ -280,6 +278,23 @@ let vueApp = createApp({
                 };
               }
             }
+            //received resistance value
+            if (jsonData.command == "read" && jsonData.time != undefined) {
+              if (this.ports.visa.selected == jsonData.resource) {
+                try{
+                  let point = {
+                    t: jsonData.time,
+                    V: jsonData.voltage,
+                    R: parseFloat(jsonData.response)
+                  };
+                  chartVar.addDataPoint(point);
+                  this.file.addData(point);
+                } catch (e) {
+                  console.log(e);
+                }
+              }
+            }
+
 
           }
         }
@@ -315,6 +330,7 @@ let vueApp = createApp({
     },
     requestData: function () {
 
+
       this.status.process.t = this.status.process.t + 1;
 
       //set and request visa port data
@@ -325,46 +341,91 @@ let vueApp = createApp({
       //TODO
 
 
+      //Id for the request
+      let requestTimeAsId = this.status.process.t;
+
 
 
       //Request serail port data
-      let cmd = {};
-      cmd.type = "serial";
-      cmd.port = this.ports.serial.selected;
-      cmd.baud = this.ports.serial.baud;
-      cmd.tOut = this.ports.serial.tOut;
-      cmd.command = "sRCbor";
-      cmd.data = {
-        R: {
-          R: null,
-          T: null,
-          S0: null,
-          S1: null,
-          S2: null,
-          S3: null,
-        },
-        W: {
-          R: this.setValues.temperature
-        }
-      };
-      
-      
-      // set and get relay positions
-      for (let i=0; i<this.relays.list.length; i++) {
-        cmd.data.R['S'+i] = null;
-        let cumVal = 0;
-        let relativeTime = math.mod(this.status.process.t,this.relays.list[i].total);
-        for (let j=0; j<this.relays.list[i].list.length; j++) {
-          cumVal += this.relays.list[i].list[j];
-          if (relativeTime<cumVal) {
-            cmd.data.W['S'+i] = !isEven(j);
-            break;
+      if (this.ports.serial.selected != "") {
+        
+        let cmd = {};
+        cmd.time = requestTimeAsId;
+        cmd.type = "serial";
+        cmd.port = this.ports.serial.selected;
+        cmd.baud = this.ports.serial.baud;
+        cmd.tOut = this.ports.serial.tOut;
+        cmd.command = "sRCbor";
+        cmd.data = {
+          R: {
+            R: null,
+            T: null,
+            S0: null,
+            S1: null,
+            S2: null,
+            S3: null,
+          },
+          W: {
+            R: this.setValues.temperature
+          }
+        };
+        
+        
+        // set and get relay positions
+        for (let i=0; i<this.relays.list.length; i++) {
+          cmd.data.R['S'+i] = null;
+          let cumVal = 0;
+          let relativeTime = math.mod(this.status.process.t,this.relays.list[i].total);
+          for (let j=0; j<this.relays.list[i].list.length; j++) {
+            cumVal += this.relays.list[i].list[j];
+            if (relativeTime<cumVal) {
+              cmd.data.W['S'+i] = !isEven(j);
+              break;
+            }
           }
         }
+        //console.log(cmd);
+        
+        this.sendDataToWSocket(cmd);
       }
-      //console.log(cmd);
-      
-      this.sendDataToWSocket(cmd);
+
+      //Request visa port data
+      if (this.ports.visa.selected != "") {
+        let visaCommands = [
+          "reset()",
+          "smu.measure.func = smu.FUNC_DC_CURRENT",
+          "smu.measure.autorange = smu.ON",
+          "smu.measure.unit = smu.UNIT_OHM",
+          "smu.measure.count = 5",
+          "smu.source.func = smu.FUNC_DC_VOLTAGE",
+          "smu.source.level = " +this.setValues.voltage,
+          "smu.source.ilimit.level = 0.01",
+          "smu.source.output = smu.ON",
+          "print(smu.measure.read())",
+          "smu.source.output = smu.OFF",
+        ];
+  
+        for (let i=0; i<visaCommands.length; i++) {
+          let visaCommand = visaCommands[i];
+          let cmd = {
+            "type": "visa",
+            "command": "write",
+            "resource": this.ports.visa.selected,
+            "data": visaCommand
+          };
+          this.sendDataToWSocket(cmd);
+        }
+        cmd = {
+          "time": requestTimeAsId,
+          "voltage": this.setValues.voltage,
+          "type": "visa",
+          "command": "read",
+          "resource": this.ports.visa.selected
+        };
+        this.sendDataToWSocket(cmd);
+
+      }  
+
 
 
 
@@ -415,6 +476,7 @@ let vueApp = createApp({
       chartVar.setVisibility("S1",false);
       chartVar.setVisibility("S2",false);
       chartVar.setVisibility("S3",false);
+      chartVar.setVisibility("V",false);
       switch (model) {
         case 0:
           chartVar.setVisibility("TR",true);
@@ -423,6 +485,7 @@ let vueApp = createApp({
         case 1:
           chartVar.setVisibility("T",true);
           chartVar.setVisibility("R",true);
+          chartVar.setVisibility("V",true);
           break;
         case 2:
           chartVar.setVisibility("R",true);

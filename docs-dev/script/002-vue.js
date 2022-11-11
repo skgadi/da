@@ -58,6 +58,7 @@ let vueApp = createApp({
       }
     },
     sendCode() {
+      this.codetoSend.id = Date.now();
       if (this.enableSend) {
         console.log(JSON5.stringify(this.codetoSend));
         this.websocket.send(JSON.stringify(this.codetoSend));

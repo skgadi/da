@@ -66,6 +66,7 @@ const chartVar = {
     this.createSeries("Temperature setpoint", "TR");
     this.createSeries("Temperature", "T");
     this.createSeries("Resistance", "R");
+    this.createSeries("Voltage", "V");
 
     // Add cursor
     this.chart.set("cursor", am5xy.XYCursor.new(this.root, {
