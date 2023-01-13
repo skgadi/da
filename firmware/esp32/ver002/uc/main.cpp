@@ -29,17 +29,14 @@ void loop () {
     try {
       std::vector<std::uint8_t> cborArray = {};
       while (Serial.available()) {
-        cborArray.insert(cborArray.begin(), Serial.read());
-        //cborArray.push_front() .push_back(Serial.read());
+        //cborArray.insert(cborArray.begin(), Serial.read());
+        cborArray.push_back(Serial.read());
       }
       DATA_IN = nlohmann::json::from_cbor(cborArray);
-      
-      //Serial.println(DATA_IN.dump(2).c_str());
-
       daInterface.processInData(DATA_IN);
-      
     } catch (const std::exception& e) {
       //Serial.println(e.what());
+      Serial.write(0xf6);
     }
   }
 }

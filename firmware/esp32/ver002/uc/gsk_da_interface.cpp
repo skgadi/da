@@ -47,6 +47,7 @@ void GSK_DA_INTERFACE::processInData(nlohmann::json json) {
         mainPropertiesList->setVal(i, element);
       }
     } catch (const std::exception& e) {
+      Serial.write(0xf6);
     }
   }
   //Serial.println(DATA_OUT.dump(2).c_str());

@@ -53,7 +53,7 @@ def onMessageSerialTaskList(command):
 
 def onMessageSerialTaskOpen(command):
   global channelsOpenend
-  tOut = 0.05;
+  tOut = 0.0005; #0.5ms
   if "tOut" in command:
     if command['tOut']>0:
       tOut=command['tOut'];
@@ -99,8 +99,16 @@ def onMessageSerialTaskSRCbor(command):
   channelsOpenend["serial"][command["port"]].reset_input_buffer()
   channelsOpenend["serial"][command["port"]].write(dumps(command["data"]))
   recInfo = channelsOpenend["serial"][command["port"]].readline()
-  #print(recInfo);
+  
+  for i in range(0, 10000):
+    print(recInfo);
+    tempLen = len(recInfo);
+    recInfo += channelsOpenend["serial"][command["port"]].readline();
+    if (len(recInfo) > 0 and tempLen == len(recInfo)):
+      break;
+
   command['response'] = loads(recInfo)
+  
   global multipleSerialError
   multipleSerialError = 0
 
