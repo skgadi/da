@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>title</title>
+    <meta name="description" content="Serial port interface for DA Serial with esp32">
+    <meta name="author" content="S. K. Gadi">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/json5@2/dist/index.min.js"></script>
+  
+    <!--link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.1.1/dist/vuetify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.1.1/dist/vuetify.min.js"></script>
+
+
+    
+    <link rel="stylesheet" href="/serial/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <v-layout>
+        <v-navigation-drawer v-model="drawer" temporary location="right">
+        </v-navigation-drawer>
+        <v-app-bar density="compact" >
+          <template v-slot:prepend>
+            <v-list-item nav prepend-avatar="/../logo.png"></v-list-item>
+            <v-app-bar-title>Kitchen  sink for DA's serial DAQ</v-app-bar-title>
+          </template>
+          <template v-slot:append>
+            <v-btn icon  @click="toggleTheme"><v-icon>mdi-theme-light-dark</v-icon></v-btn>
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"><i class="fa-solid fa-microchip"></i></v-app-bar-nav-icon>
+          </template>
+        </v-app-bar>
+        <v-main>
+          <v-card height="100%"></v-card>
+        </v-main>
+      </v-layout>
+    </div>
+    
+    <script src="/serial/script.js"></script>
+  </body>
+</html>
