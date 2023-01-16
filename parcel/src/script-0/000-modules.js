@@ -1,15 +1,46 @@
-import { createApp } from 'vue'
-import App from './App-0.vue'
 
-// Vuetify
-import 'vuetify/dist/vuetify.css'
-//import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-//import * as components from 'vuetify/components'
-//import * as directives from 'vuetify/directives'
+
+import { createApp } from 'vue'
+
+import 'vuetify-styles'
+import { createVuetify, useTheme } from 'vuetify'
+//import * as components from 'vuetify/lib/components'
+//import * as directives from 'vuetify/lib/directives'
+
+import '@mdi/font/css/materialdesignicons.min.css'
+import "fa"
+
+
+
 
 const vuetify = createVuetify({
+  theme: {
+    defaultTheme: 'light'
+  },
 });
 
-createApp(App).use(vuetify).mount('#app');
 
+let vueApp = createApp({
+  data() {
+    return {
+      logo: require('./logo.png'),
+      drawer: null,
+      theme: useTheme(),
+      chart: {
+        historyPoints: 1000,
+      },
+    }
+  },
+  methods: {
+    toggleTheme() {
+      if (this.theme.global.current.dark) {
+        this.theme.global.name = 'light';
+      } else {
+        this.theme.global.name = 'dark';
+      }
+      console.log();
+    },
+  }
+});
+
+vueApp.use(vuetify).mount('#app');
