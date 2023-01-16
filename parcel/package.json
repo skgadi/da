@@ -1,11 +1,12 @@
 {
-	"name": "tiorifas",
+	"name": "skgadi-desktop-agent",
 	"source": "src/index.html",
 	"targets": {
 		"default": {
 			"distDir": "./dist"
 		}
 	},
+	"license": "ECL-2.0",
 	"alias": {
 		"vue": "./node_modules/vue/dist/vue.esm-browser.prod.js",
 		"vuetify": "./node_modules/vuetify/dist/vuetify.esm.js",
@@ -28,8 +29,11 @@
 	"dependencies": {
 		"@fortawesome/fontawesome-free": "^6.2.1",
 		"@mdi/font": "^7.1.96",
+		"chart.js": "^4.1.2",
 		"rimraf": "^4.0.5",
 		"vue": "^3.2.45",
+		"vue-chart-3": "^3.1.8",
+		"vue-chartjs": "^5.2.0",
 		"vue-router": "4",
 		"vuetify": "3.1.1",
 		"vuex": "^4.0.2"

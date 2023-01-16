@@ -30,25 +30,30 @@
 
 
 
+  
     
   </head>
   <body>
     <div id="app">
-      <v-layout>
-        <v-navigation-drawer v-model="drawer" temporary location="right">
-        </v-navigation-drawer>
-        <v-app-bar density="compact" >
+      <v-layout class="height-100">
+        <v-navigation-drawer v-model="drawer" temporary location="right" :width="500"></v-navigation-drawer>
+        <v-app-bar density="compact">
           <template v-slot:prepend>
             <v-list-item nav :prepend-avatar="logo"></v-list-item>
-            <v-app-bar-title>Kitchen  sink for DA's serial DAQ</v-app-bar-title>
+            <v-app-bar-title>SKGadi's desktop agent</v-app-bar-title>
           </template>
           <template v-slot:append>
             <v-btn icon  @click="toggleTheme"><v-icon>mdi-theme-light-dark</v-icon></v-btn>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"><i class="fa-solid fa-microchip"></i></v-app-bar-nav-icon>
           </template>
         </v-app-bar>
-        <v-main>
-          <v-card height="100%"></v-card>
+        <v-navigation-drawer permanent location="left" :width="500" class="pa-1 ma-auto">
+          <v-btn @click="addAPoint">
+            Add a point
+          </v-btn>
+        </v-navigation-drawer>
+        <v-main >
+          <chart></chart>
         </v-main>
       </v-layout>
     </div>
