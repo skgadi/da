@@ -1,0 +1,23 @@
+{
+	"name": "tiorifas",
+	"source": "src/index.html",
+	"targets": {
+		"default": {
+			"distDir": "./dist"
+		}
+	},
+	"scripts": {
+		"clean:output": "rimraf dist",
+		"start": "npm run clean:output && parcel",
+		"build": "npm run clean:output && parcel build"
+	},
+	"devDependencies": {
+		"@parcel/transformer-vue": "^2.8.2",
+		"parcel": "^2.8.2"
+	},
+	"dependencies": {
+		"rimraf": "^4.0.5",
+		"vue": "^3.2.45",
+		"vuetify": "3.1.1"
+	}
+}
