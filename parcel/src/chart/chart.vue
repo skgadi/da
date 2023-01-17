@@ -1,8 +1,9 @@
 <template>
-  <Line :data="data" :options="options" />
+  <Line :data="data" :options="options" ref="childRef"/>
 </template>
 
 <script lang="ts">
+import { ref } from 'vue'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -34,11 +35,15 @@ export default {
   data() {
     return chartConfig
   },
-  methods: {
-    addPoint() {
-      this.data.datasets[0].data.push(10)
-      this.data.labels.push('new label')
-      this.$data._chart.update()
+
+  setup() {
+    const childRef = ref(null);
+    const addPoint = () => {
+      console.log("addPoint");
+    }
+    return {
+      childRef,
+      addPoint
     }
   },
 }

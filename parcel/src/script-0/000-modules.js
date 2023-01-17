@@ -1,6 +1,6 @@
 
 
-import { createApp } from 'vue'
+import { createApp, ref } from 'vue'
 
 import 'vuetify-styles'
 import './style/style-0.css'
@@ -15,7 +15,12 @@ import "fa"
 
 import chart from './chart/chart.vue'
 
-console.log(chart);
+const chartRef = ref(chart);
+console.log(chartRef.value.setup);
+
+
+
+
 const vuetify = createVuetify({
   theme: {
     defaultTheme: 'light'
@@ -30,7 +35,7 @@ let vueApp = createApp({
       logo: require('./logo.png'),
       drawer: null,
       theme: useTheme(),
-      chartRef: chart,
+      chartRef: ref(chart).setup(),
     }
   },
   methods: {
@@ -43,7 +48,7 @@ let vueApp = createApp({
       console.log();
     },
     addAPoint() {
-      this.chartRef.addPoint();
+      console.log(this.chartRef);
     }
   }
 });
